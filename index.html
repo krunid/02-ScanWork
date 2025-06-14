@@ -52,6 +52,17 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
+
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -60,6 +71,53 @@
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">ระบบเช็คชื่อด้วยใบหน้า</h1>
             <p class="text-white text-opacity-90">สแกนใบหน้าเพื่อบันทึกการเข้าเรียน</p>
         </header>
+        
+        <!-- Class and Subject Selection -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">เลือกวิชาและชั้นเรียน</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">วิชา</label>
+                    <select id="subject" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                        <option value="" disabled selected>เลือกวิชา</option>
+                        <option value="สุขศึกษา 2">สุขศึกษา 2</option>
+                        <option value="พลศึกษา 2">พลศึกษา 2</option>
+                        <option value="สุขศึกษา 3">สุขศึกษา 3</option>
+                        <option value="พลศึกษา 3">พลศึกษา 3</option>
+                        <option value="กิจกรรมสุขภาพ 1">กิจกรรมสุขภาพ 1</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="class" class="block text-sm font-medium text-gray-700 mb-1">ชั้นเรียน</label>
+                    <select id="class" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                        <option value="" disabled selected>เลือกชั้นเรียน</option>
+                        <optgroup label="ประถมศึกษาปีที่ 1">
+                            <option value="ป.1/1">ป.1/1</option>
+                            <option value="ป.1/2">ป.1/2</option>
+                            <option value="ป.1/3">ป.1/3</option>
+                        </optgroup>
+                        <optgroup label="ประถมศึกษาปีที่ 2">
+                            <option value="ป.2/1">ป.2/1</option>
+                            <option value="ป.2/2">ป.2/2</option>
+                            <option value="ป.2/3">ป.2/3</option>
+                        </optgroup>
+                        <optgroup label="ประถมศึกษาปีที่ 3">
+                            <option value="ป.3/1">ป.3/1</option>
+                            <option value="ป.3/2">ป.3/2</option>
+                            <option value="ป.3/3">ป.3/3</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mt-4 flex justify-end">
+                <button id="apply-selection" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                    ยืนยันการเลือก
+                </button>
+            </div>
+        </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Camera Section -->
@@ -88,11 +146,11 @@
                     <div class="p-4 bg-gray-100">
                         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                             <div>
-                                <h3 class="font-medium text-gray-800">วิชา: <span class="font-semibold">การเขียนโปรแกรมคอมพิวเตอร์</span></h3>
-                                <p class="text-gray-600 text-sm">รหัสวิชา: CS101 | ห้อง: 305</p>
+                                <h3 class="font-medium text-gray-800">วิชา: <span id="current-subject" class="font-semibold">กรุณาเลือกวิชา</span></h3>
+                                <p class="text-gray-600 text-sm">ชั้นเรียน: <span id="current-class">กรุณาเลือกชั้นเรียน</span> | ห้อง: <span id="current-room">-</span></p>
                             </div>
                             <div class="flex gap-2">
-                                <button id="start-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                                <button id="start-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition" disabled>
                                     เริ่มสแกน
                                 </button>
                                 <button id="stop-btn" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition" disabled>
@@ -122,7 +180,7 @@
                 <div class="p-4">
                     <div class="flex justify-between items-center mb-4">
                         <div class="text-sm text-gray-600">
-                            <span id="attendance-count">0</span> / <span id="total-students">30</span> คน
+                            <span id="attendance-count">0</span> / <span id="total-students">0</span> คน
                         </div>
                         <div class="text-sm font-medium">
                             เวลาเริ่มเรียน: 09:00 น.
@@ -150,20 +208,81 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('current-date').textContent = now.toLocaleDateString('th-TH', options);
             
-            // Sample student data
-            const students = [
-                { id: 1, name: 'ธนกร สมบูรณ์', studentId: '6401234', image: createAvatar('ธ', 'bg-blue-500') },
-                { id: 2, name: 'วรรณา พิมพ์ดี', studentId: '6401235', image: createAvatar('ว', 'bg-pink-500') },
-                { id: 3, name: 'สมชาย ใจดี', studentId: '6401236', image: createAvatar('ส', 'bg-purple-500') },
-                { id: 4, name: 'นภา แสงทอง', studentId: '6401237', image: createAvatar('น', 'bg-yellow-500') },
-                { id: 5, name: 'กิตติ วงศ์สกุล', studentId: '6401238', image: createAvatar('ก', 'bg-green-500') },
-                { id: 6, name: 'พิมพ์ชนก รักเรียน', studentId: '6401239', image: createAvatar('พ', 'bg-red-500') },
-                { id: 7, name: 'อนุชา สุขสันต์', studentId: '6401240', image: createAvatar('อ', 'bg-indigo-500') }
-            ];
+            // Class data mapping
+            const classData = {
+                'ป.1/1': { room: '101', students: [
+                    { id: 1, name: 'ธนกร สมบูรณ์', studentId: '6401001', image: createAvatar('ธ', 'bg-blue-500') },
+                    { id: 2, name: 'วรรณา พิมพ์ดี', studentId: '6401002', image: createAvatar('ว', 'bg-pink-500') },
+                    { id: 3, name: 'สมชาย ใจดี', studentId: '6401003', image: createAvatar('ส', 'bg-purple-500') },
+                    { id: 4, name: 'นภา แสงทอง', studentId: '6401004', image: createAvatar('น', 'bg-yellow-500') },
+                    { id: 5, name: 'กิตติ วงศ์สกุล', studentId: '6401005', image: createAvatar('ก', 'bg-green-500') }
+                ]},
+                'ป.1/2': { room: '102', students: [
+                    { id: 6, name: 'พิมพ์ชนก รักเรียน', studentId: '6401006', image: createAvatar('พ', 'bg-red-500') },
+                    { id: 7, name: 'อนุชา สุขสันต์', studentId: '6401007', image: createAvatar('อ', 'bg-indigo-500') },
+                    { id: 8, name: 'มานะ ตั้งใจ', studentId: '6401008', image: createAvatar('ม', 'bg-blue-500') },
+                    { id: 9, name: 'สุดา ดีงาม', studentId: '6401009', image: createAvatar('ส', 'bg-pink-500') },
+                    { id: 10, name: 'วิชัย เรียนเก่ง', studentId: '6401010', image: createAvatar('ว', 'bg-purple-500') }
+                ]},
+                'ป.1/3': { room: '103', students: [
+                    { id: 11, name: 'รัตนา สวัสดี', studentId: '6401011', image: createAvatar('ร', 'bg-yellow-500') },
+                    { id: 12, name: 'ชาติชาย มั่นคง', studentId: '6401012', image: createAvatar('ช', 'bg-green-500') },
+                    { id: 13, name: 'ดวงใจ มีสุข', studentId: '6401013', image: createAvatar('ด', 'bg-red-500') },
+                    { id: 14, name: 'ประสิทธิ์ ทำดี', studentId: '6401014', image: createAvatar('ป', 'bg-indigo-500') },
+                    { id: 15, name: 'นารี สดใส', studentId: '6401015', image: createAvatar('น', 'bg-blue-500') }
+                ]},
+                'ป.2/1': { room: '201', students: [
+                    { id: 16, name: 'สมศักดิ์ ศรีสุข', studentId: '6301001', image: createAvatar('ส', 'bg-pink-500') },
+                    { id: 17, name: 'วันดี คงดี', studentId: '6301002', image: createAvatar('ว', 'bg-purple-500') },
+                    { id: 18, name: 'อรุณ สว่าง', studentId: '6301003', image: createAvatar('อ', 'bg-yellow-500') },
+                    { id: 19, name: 'มาลี ดอกไม้', studentId: '6301004', image: createAvatar('ม', 'bg-green-500') },
+                    { id: 20, name: 'สุรชัย ชัยมงคล', studentId: '6301005', image: createAvatar('ส', 'bg-red-500') }
+                ]},
+                'ป.2/2': { room: '202', students: [
+                    { id: 21, name: 'นิภา สายลม', studentId: '6301006', image: createAvatar('น', 'bg-indigo-500') },
+                    { id: 22, name: 'ประเสริฐ เลิศลอย', studentId: '6301007', image: createAvatar('ป', 'bg-blue-500') },
+                    { id: 23, name: 'จินดา ดาวเด่น', studentId: '6301008', image: createAvatar('จ', 'bg-pink-500') },
+                    { id: 24, name: 'บุญมี มีโชค', studentId: '6301009', image: createAvatar('บ', 'bg-purple-500') },
+                    { id: 25, name: 'สมหมาย ใจงาม', studentId: '6301010', image: createAvatar('ส', 'bg-yellow-500') }
+                ]},
+                'ป.2/3': { room: '203', students: [
+                    { id: 26, name: 'วิเชียร เชี่ยวชาญ', studentId: '6301011', image: createAvatar('ว', 'bg-green-500') },
+                    { id: 27, name: 'สุนันทา นารี', studentId: '6301012', image: createAvatar('ส', 'bg-red-500') },
+                    { id: 28, name: 'ประภา ภาดี', studentId: '6301013', image: createAvatar('ป', 'bg-indigo-500') },
+                    { id: 29, name: 'ชัยวัฒน์ วัฒนชัย', studentId: '6301014', image: createAvatar('ช', 'bg-blue-500') },
+                    { id: 30, name: 'รุ่งนภา ฟ้าใส', studentId: '6301015', image: createAvatar('ร', 'bg-pink-500') }
+                ]},
+                'ป.3/1': { room: '301', students: [
+                    { id: 31, name: 'ธีรพงษ์ พงษ์ธีระ', studentId: '6201001', image: createAvatar('ธ', 'bg-purple-500') },
+                    { id: 32, name: 'กมลา มาลา', studentId: '6201002', image: createAvatar('ก', 'bg-yellow-500') },
+                    { id: 33, name: 'ภาณุ ณุภา', studentId: '6201003', image: createAvatar('ภ', 'bg-green-500') },
+                    { id: 34, name: 'สุพรรณ พรรณสุ', studentId: '6201004', image: createAvatar('ส', 'bg-red-500') },
+                    { id: 35, name: 'นิติพล พลนิติ', studentId: '6201005', image: createAvatar('น', 'bg-indigo-500') }
+                ]},
+                'ป.3/2': { room: '302', students: [
+                    { id: 36, name: 'อรพรรณ พรรณอร', studentId: '6201006', image: createAvatar('อ', 'bg-blue-500') },
+                    { id: 37, name: 'วีระชัย ชัยวีระ', studentId: '6201007', image: createAvatar('ว', 'bg-pink-500') },
+                    { id: 38, name: 'ปิยะ ยะปิ', studentId: '6201008', image: createAvatar('ป', 'bg-purple-500') },
+                    { id: 39, name: 'ศิริพร พรศิริ', studentId: '6201009', image: createAvatar('ศ', 'bg-yellow-500') },
+                    { id: 40, name: 'ทวีศักดิ์ ศักดิ์ทวี', studentId: '6201010', image: createAvatar('ท', 'bg-green-500') }
+                ]},
+                'ป.3/3': { room: '303', students: [
+                    { id: 41, name: 'กฤษณา ณากฤษ', studentId: '6201011', image: createAvatar('ก', 'bg-red-500') },
+                    { id: 42, name: 'สุทธิพงษ์ พงษ์สุทธิ', studentId: '6201012', image: createAvatar('ส', 'bg-indigo-500') },
+                    { id: 43, name: 'นงลักษณ์ ลักษณ์นง', studentId: '6201013', image: createAvatar('น', 'bg-blue-500') },
+                    { id: 44, name: 'พงศธร ธรพงศ์', studentId: '6201014', image: createAvatar('พ', 'bg-pink-500') },
+                    { id: 45, name: 'จารุวรรณ วรรณจารุ', studentId: '6201015', image: createAvatar('จ', 'bg-purple-500') }
+                ]}
+            };
             
-            document.getElementById('total-students').textContent = students.length;
-            
-            // Camera handling
+            // Elements
+            const subjectSelect = document.getElementById('subject');
+            const classSelect = document.getElementById('class');
+            const applySelectionBtn = document.getElementById('apply-selection');
+            const currentSubject = document.getElementById('current-subject');
+            const currentClass = document.getElementById('current-class');
+            const currentRoom = document.getElementById('current-room');
+            const totalStudents = document.getElementById('total-students');
             const video = document.getElementById('video');
             const placeholder = document.getElementById('placeholder');
             const startBtn = document.getElementById('start-btn');
@@ -177,9 +296,43 @@
             let scanning = false;
             let stream = null;
             let attendedStudents = [];
+            let selectedStudents = [];
             
+            // Event listeners
+            applySelectionBtn.addEventListener('click', applySelection);
             startBtn.addEventListener('click', startScanning);
             stopBtn.addEventListener('click', stopScanning);
+            
+            function applySelection() {
+                const selectedSubject = subjectSelect.value;
+                const selectedClass = classSelect.value;
+                
+                if (!selectedSubject || !selectedClass) {
+                    alert('กรุณาเลือกวิชาและชั้นเรียน');
+                    return;
+                }
+                
+                // Update display
+                currentSubject.textContent = selectedSubject;
+                currentClass.textContent = selectedClass;
+                currentRoom.textContent = classData[selectedClass].room;
+                
+                // Set selected students
+                selectedStudents = classData[selectedClass].students;
+                totalStudents.textContent = selectedStudents.length;
+                
+                // Reset attendance
+                attendedStudents = [];
+                attendanceCount.textContent = 0;
+                attendanceProgress.style.width = '0%';
+                updateAttendanceList();
+                
+                // Enable start button
+                startBtn.disabled = false;
+                
+                // Add status
+                addStatus(`เลือกวิชา ${selectedSubject} ชั้น ${selectedClass} ห้อง ${classData[selectedClass].room}`);
+            }
             
             function startScanning() {
                 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -260,7 +413,7 @@
                     // Simulate recognition after a short delay
                     setTimeout(() => {
                         if (scanning) {
-                            const availableStudents = students.filter(s => !attendedStudents.some(a => a.id === s.id));
+                            const availableStudents = selectedStudents.filter(s => !attendedStudents.some(a => a.id === s.id));
                             
                             if (availableStudents.length > 0) {
                                 // Randomly select a student who hasn't been marked yet
@@ -270,9 +423,12 @@
                                 markAttendance(student);
                             }
                             
-                            // Continue simulation if still scanning
-                            if (scanning) {
+                            // Continue simulation if still scanning and not all students are marked
+                            if (scanning && attendedStudents.length < selectedStudents.length) {
                                 simulateFaceDetection();
+                            } else if (scanning && attendedStudents.length === selectedStudents.length) {
+                                addStatus('การสแกนเสร็จสิ้น นักเรียนเข้าเรียนครบทุกคน');
+                                stopScanning();
                             }
                         }
                     }, 1000);
@@ -285,7 +441,7 @@
                 
                 // Update attendance count and progress
                 attendanceCount.textContent = attendedStudents.length;
-                const percentage = (attendedStudents.length / students.length) * 100;
+                const percentage = (attendedStudents.length / selectedStudents.length) * 100;
                 attendanceProgress.style.width = percentage + '%';
                 
                 // Add status message
@@ -365,5 +521,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94f7398f97b19bae',t:'MTc0OTg3NjgxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94f7521116cf5805',t:'MTc0OTg3NzgxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
